@@ -1,0 +1,6 @@
+@import './settings/global';
+@import './elements/typography';
+
+body {
+    font-family: $body-font-family;
+}
