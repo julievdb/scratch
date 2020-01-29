@@ -21,9 +21,9 @@ wp.customize( '_themename_accent_colour', (value) => {
    inline_css(value);
 });
 
-wp.customize( '_themename_font_family', (value) => {
-   inline_css(value);
-});
+// wp.customize( '_themename_font_family', (value) => {
+//    inline_css(value);
+// });
 
 function inline_css(value) {
    value.bind( (to) => {

@@ -38,18 +38,3 @@
    </header>
 
    <div id="content">
-
-   <img
-      srcset="
-         https://via.placeholder.com/320x150 320w,
-         https://via.placeholder.com/512x250 512w,
-         https://via.placeholder.com/1200x500 1200w
-      "
-      sizes="
-         (max-width: 320px) 300px,
-         (max-width: 480px) 460px,
-         1200px
-      "
-      src="https://via.placeholder.com/1200x500"
-      alt="alternative text"
-   />

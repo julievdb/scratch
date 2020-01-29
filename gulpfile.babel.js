@@ -15,11 +15,15 @@ import browserSync from 'browser-sync';
 import zip from 'gulp-zip';
 import replace from 'gulp-replace';
 import info from './package.json';
+import rename from 'gulp-rename';
 
 const server = browserSync.create();
 const PRODUCTION = yargs.argv.prod;
 
 const paths = {
+   rename: {
+      src: ['archive-_themename_portfolio.php', 'single-_themename_portfolio.php', 'taxonomy-_themename_skills.php', 'taxonomy-_themename_project_type.php']
+   },
    styles: {
       src: ['src/assets/scss/bundle.scss', 'src/assets/scss/admin.scss', 'src/assets/scss/editor.scss'],
       dest: 'dist/assets/css'
@@ -33,7 +37,7 @@ const paths = {
       dest: 'dist/assets/images'
    },
    plugins: {
-      src: ['../../plugins/_themename-metaboxes/packaged/*', '../../plugins/_themename-shortcodes/packaged/*'],
+      src: ['../../plugins/_themename-metaboxes/packaged/*', '../../plugins/_themename-shortcodes/packaged/*', '../../plugins/_themename-post-types/packaged/*'],
       dest: 'lib/plugins'
    },
    other: {
@@ -41,9 +45,26 @@ const paths = {
       dest: 'dist/assets'
    },
    package: {
-      src: ['**/*', '!.vscode', '!node_modules{,/**}', '!packaged{,/**}', '!src{,/**}', '!.babelrc', '!.gitignore', '!gulpfile.babel.js', '!package.json', '!package-lock.json'],
+      src: ['**/*', '!.vscode', '!node_modules{,/**}', '!packaged{,/**}', '!src{,/**}', '!.babelrc', '!.gitignore', '!gulpfile.babel.js', '!package.json', '!package-lock.json', '!archive-_themename_portfolio.php', '!single-_themename_portfolio.php', '!taxonomy-_themename_skills.php', '!taxonomy-_themename_project_type.php'],
       dest: 'packaged'
    }
+}
+
+export const replace_filenames = () => {
+   return gulp
+      .src(paths.rename.src)
+      .pipe(
+         rename(path => {
+            path.basename = path.basename.replace('_themename', info.name);
+         })
+      )
+      .pipe(gulp.dest('./'));
+}
+
+export const delete_replaced_filenames = () => {
+   return del(
+      paths.rename.src.map((filename) => filename.replace('_themename', info.name))
+   );
 }
 
 export const serve = (done) => {
@@ -64,8 +85,10 @@ export const styles = () => {
    return gulp.src(paths.styles.src)
       .pipe(gulpif(!PRODUCTION, sourcemaps.init()))
       .pipe(sass().on('error', sass.logError))
-      .pipe(gulpif(PRODUCTION, postcss([ autoprefixer ])))
-      .pipe(gulpif(PRODUCTION, cleanCSS({compatibility: 'ie8'})))
+      .pipe(gulpif(PRODUCTION, postcss([autoprefixer])))
+      .pipe(gulpif(PRODUCTION, cleanCSS({
+         compatibility: 'ie8'
+      })))
       .pipe(gulpif(!PRODUCTION, sourcemaps.write()))
       .pipe(gulp.dest(paths.styles.dest))
       .pipe(server.stream());
@@ -76,17 +99,15 @@ export const scripts = () => {
       .pipe(named())
       .pipe(webpack({
          module: {
-            rules: [
-               {
-                  test: /\.js$/,
-                  use: {
-                     loader: 'babel-loader',
-                     options: {
-                        presets: ['@babel/preset-env']
-                     }
+            rules: [{
+               test: /\.js$/,
+               use: {
+                  loader: 'babel-loader',
+                  options: {
+                     presets: ['@babel/preset-env']
                   }
                }
-            ]
+            }]
          },
          output: {
             filename: '[name].js'
@@ -137,6 +158,6 @@ export const dev = gulp.series(clean, gulp.parallel(styles, scripts, images, cop
 
 export const build = gulp.series(clean, gulp.parallel(styles, scripts, images, copy), copyPlugins);
 
-export const bundle = gulp.series(build, compress);
+export const bundle = gulp.series(build, replace_filenames, compress, delete_replaced_filenames);
 
 export default dev;

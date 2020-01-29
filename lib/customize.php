@@ -62,23 +62,36 @@ function _themename_customize_register( $wp_customize ) {
       'section' => '_themename_general_options',
    )));
 
-   $wp_customize->add_setting('_themename_font_family', array(
-      'default' => '"Roboto Slab", serif',
-      'transport' => 'postMessage',
-      'capability'     => 'edit_theme_options'
-      // 'sanitize_callback' => '_themename_sanitize_font_family'
-   ));
+   // $wp_customize->add_setting('_themename_font_family', array(
+   //    'default' => '"Roboto Slab", serif',
+   //    'transport' => 'postMessage',
+   //    'capability'     => 'edit_theme_options'
+   //    // 'sanitize_callback' => '_themename_sanitize_font_family'
+   // ));
 
-   $wp_customize->add_control('_themename_font_family', array(
-      'type' => 'select',
-      'label' => esc_html__( 'Font Family', '_themename' ),
-      'choices' => array(
-         '"Roboto Slab", serif' => 'Roboto Slab',
-         'Roboto, sans-serif' => 'Roboto',
-         '"Playfair Display", serif' => 'Playfair Display',
-      ),
-      'section' => '_themename_general_options'
-   ));
+   // $wp_customize->add_control('_themename_font_family', array(
+   //    'type' => 'select',
+   //    'label' => esc_html__( 'Font Family', '_themename' ),
+   //    'choices' => array(
+   //       '"Roboto Slab", serif' => 'Roboto Slab',
+   //       'Roboto, sans-serif' => 'Roboto',
+   //       '"Playfair Display", serif' => 'Playfair Display',
+   //    ),
+   //    'section' => '_themename_general_options'
+   // ));
+
+   $wp_customize->add_setting( '_themename_portfolio_slug', array(
+		'default'           => 'portfolio',
+		'transport'         => 'postMessage',
+      'sanitize_callback' => 'sanitize_text_field',
+    ) );
+
+    $wp_customize->add_control( '_themename_portfolio_slug', array(
+		'type'    => 'text',
+      'label'    => esc_html__( 'Portfolio Slug', '_themename' ),
+      'description' => esc_html__( 'Will appear in the archive url', '_themename' ),
+		'section'  => '_themename_general_options',
+    ));
 
    /*#################### FOOTER SETTINGS #####################*/
 
@@ -144,21 +157,21 @@ add_action( 'customize_register', '_themename_customize_register' );
 
 
 
-function _themename_get_font_family_options() {
-   // $valid = array(
-   //    '"Roboto Slab", serif', 'Roboto, sans-serif', 'Playfair, serif'
-   // );
-   return array(
-      'value1' => '"Roboto Slab", serif',
-      'value2' => 'Roboto, sans-serif',
-      'value3' => 'Playfair, serif',
-   );
-   // if (in_array( $input, $valid, true )) {
-   //    return $input;
-   // }
+// function _themename_get_font_family_options() {
+//    // $valid = array(
+//    //    '"Roboto Slab", serif', 'Roboto, sans-serif', 'Playfair, serif'
+//    // );
+//    return array(
+//       'value1' => '"Roboto Slab", serif',
+//       'value2' => 'Roboto, sans-serif',
+//       'value3' => 'Playfair, serif',
+//    );
+//    // if (in_array( $input, $valid, true )) {
+//    //    return $input;
+//    // }
 
-   // return '"Roboto Slab", serif';
-}
+//    // return '"Roboto Slab", serif';
+// }
 
 function _themename_sanitize_site_info( $input ) {
    $allowed = array('a' => array(
