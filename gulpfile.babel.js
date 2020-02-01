@@ -16,6 +16,7 @@ import zip from 'gulp-zip';
 import replace from 'gulp-replace';
 import info from './package.json';
 import rename from 'gulp-rename';
+import wpPot from 'gulp-wp-pot';
 
 const server = browserSync.create();
 const PRODUCTION = yargs.argv.prod;
@@ -48,6 +49,13 @@ const paths = {
       src: ['**/*', '!.vscode', '!node_modules{,/**}', '!packaged{,/**}', '!src{,/**}', '!.babelrc', '!.gitignore', '!gulpfile.babel.js', '!package.json', '!package-lock.json', '!archive-_themename_portfolio.php', '!single-_themename_portfolio.php', '!taxonomy-_themename_skills.php', '!taxonomy-_themename_project_type.php'],
       dest: 'packaged'
    }
+}
+
+export const pot = () => {
+   return gulp.src('**/*.php').pipe(wpPot({
+      domain: '_themename',
+      package: info.name
+   })).pipe(gulp.dest(`languages/${info.name}.pot`));
 }
 
 export const replace_filenames = () => {
@@ -156,7 +164,7 @@ export const compress = () => {
 
 export const dev = gulp.series(clean, gulp.parallel(styles, scripts, images, copy), serve, watch);
 
-export const build = gulp.series(clean, gulp.parallel(styles, scripts, images, copy), copyPlugins);
+export const build = gulp.series(clean, gulp.parallel(styles, scripts, images, copy), copyPlugins, pot);
 
 export const bundle = gulp.series(build, replace_filenames, compress, delete_replaced_filenames);
 
